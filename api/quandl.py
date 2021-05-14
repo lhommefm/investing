@@ -3,13 +3,14 @@ import requests
 import configparser
 import psycopg2
 import psycopg2.extras
+from datetime import date, timedelta
 
-# read config file
-config = configparser.ConfigParser()
-config.read('../config.ini')
+def update_Quandl_data():
 
-def update_Fred_data():
-    
+    # read config file
+    config = configparser.ConfigParser()
+    config.read('../config.ini')
+        
     # connect to the PostgreSQL server 
     conn = psycopg2.connect(
             host = config['postgres']['host'],
@@ -20,26 +21,26 @@ def update_Fred_data():
 
     cur.execute("""
         SELECT series_id 
-        FROM fred_series;
+        FROM quandl_series;
     """)
     series_list = cur.fetchall()
     print(series_list)
 
-    # run sequence of series through the FRED API to pull data
+    # run sequence of series through the Quandl API to pull data
     sql_data = []
     for series in series_list:
 
         # get results from FRED query
-        base_url = 'https://api.stlouisfed.org/fred/series/observations?series_id={series}&api_key={key}&file_type=json'
-        print(base_url.format(series = series[0], key = config['fred']['api_key']))
-        r = requests.get(base_url.format(series = series[0], key = config['fred']['api_key']))
+        base_url = 'https://www.quandl.com/api/v3/datasets/{series}/data.json?&api_key={key}&start_date={date}'
+        print(base_url.format(series = series[0], key = config['quandl']['api_key'], date = date.today() - timedelta(60)))
+        r = requests.get(base_url.format(series = series[0], key = config['quandl']['api_key'], date = date.today() - timedelta(60)))
         data = r.json()
-        observations = data["observations"]
+        data = data['dataset_data']['data']
 
         # convert FRED result JSON into SQL insert string     
-        for x in observations:
-            if x['value'] != ".":
-                sql_data.append((series[0],x['date'],x['value']))
+        for x in data:
+            sql_data.append((series[0],x[0],x[1]))
+    print(sql_data[0])
 
     # update database with FRED data
     psycopg2.extras.execute_values(cur, """
