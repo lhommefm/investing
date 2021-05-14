@@ -1,0 +1,5 @@
+config.ini
+General Notes.ipynb
+.vscode
+.ipynb_checkpoints
+__pycache__
