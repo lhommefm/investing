@@ -9,8 +9,13 @@ from datetime import datetime
 day_of_week = datetime.today().weekday()
 if day_of_week < 5:
 
-    # update API data
+    # update API data every day
     update_Yahoo_data()
-    update_Fred_data()
     update_Quandl_data()
+
+    # update API data every other day
+    if day_of_week in [0,2,4]: 
+        update_Fred_data()
+    
+    # update the Pocket database
     update_Pocket_database()

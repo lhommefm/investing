@@ -54,7 +54,7 @@ def update_Yahoo_data():
                 s[ticker].get('priceToSalesTrailing12Months'),
                 None,
                 s[ticker].get('beta'),          
-                s[ticker].get('dividendYield')                   
+                s[ticker].get('dividendYield')*100                   
             ))
         else:
             sql_data.append((
@@ -66,7 +66,7 @@ def update_Yahoo_data():
                 None if f[ticker].get('priceToSales') == 0 else f[ticker].get('priceToSales'),
                 None if f[ticker].get('priceToCashflow') == 0 else f[ticker].get('priceToCashflow'),
                 k[ticker].get('beta3Year'),
-                k[ticker].get('yield')
+                k[ticker].get('yield')*100
             ))          
     print(sql_data)
 
