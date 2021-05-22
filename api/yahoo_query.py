@@ -42,7 +42,7 @@ def update_Yahoo_data():
     ########################################################
     # loop through financials data and format for SQL insert
     sql_data = []
-    for ticker in f:
+    for ticker in ticker_list:
         print(ticker)
         if isinstance(f[ticker], str):
             sql_data.append((
@@ -54,7 +54,7 @@ def update_Yahoo_data():
                 s[ticker].get('priceToSalesTrailing12Months'),
                 None,
                 s[ticker].get('beta'),          
-                s[ticker].get('dividendYield')*100                   
+                0 if s[ticker].get('dividendYield') == None else s[ticker].get('dividendYield')*100                   
             ))
         else:
             sql_data.append((
@@ -66,7 +66,7 @@ def update_Yahoo_data():
                 None if f[ticker].get('priceToSales') == 0 else f[ticker].get('priceToSales'),
                 None if f[ticker].get('priceToCashflow') == 0 else f[ticker].get('priceToCashflow'),
                 k[ticker].get('beta3Year'),
-                k[ticker].get('yield')*100
+                0 if k[ticker].get('yield') == None else k[ticker].get('yield')*100
             ))          
     print(sql_data)
 
